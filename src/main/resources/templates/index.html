@@ -1,0 +1,525 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>数据导出页面</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrap.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrapValidator.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/flipclock/flipclock.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/index/index.css}"/>
+</head>
+<body style="overflow: hidden;">
+<div class="container">
+    <input type="hidden" id="useDb" th:value="${useDb}"/>
+    <input type="hidden" id="cdnum" value="">
+    <input type="hidden" id="cznum" value="">
+    <input type="hidden" id="ccnum" value="">
+    <input type="hidden" id="bhnum" value="">
+    <input type="hidden" id="disknum" value="">
+    <div class="head">
+        <div class="row">
+            <div class="col-7 text-left title">
+                <div>列车视频迁移终端</div>
+            </div>
+            <div class="col-4 text-right">
+                <!--<div id="headTime">
+                    <img th:src="@{/image/clock.png}">
+                    <div class="time"></div>
+                </div>-->
+                <div class="clock" style="margin-left: 100px;"></div>
+            </div>
+            <div class="col-1 text-right">
+                <div id="headTime">
+                    <img th:src="@{/static/image/head.jpg}" onclick="logout();">
+                    <div class="time" th:text='何熙'></div>
+                    <!--<div class="time" th:text="${user} !=null?${user.yhdh}:'何熙'" onclick="logout();"></div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <!--表格纵向之间的间隙 30px-->
+    <div th:each="i:${#numbers.sequence(0,4)}" style="height: 100%;margin-bottom: 30px;">
+        <div class="row justify-content-around">
+            <div class="col-md-3 outBorder" th:each="j:${#numbers.sequence(0,3)}">
+                <div class="innerBorder" th:id="grid_+(${i}+1)+(${j}+1)">
+                    <div class="row data">
+                        <div class="col-3">
+                            <div class="row">
+                                <div class="col">视频：</div>
+                            </div>
+                            <div class="row">
+                                <div class="col">状态：</div>
+                            </div>
+                            <div class="row">
+                                <div class="col">车次：</div>
+                            </div>
+
+                        </div>
+                        <div class="col-9">
+                            <div class="row">
+                                <!--<div class="col" th:id="video+(${i}+1)+(${j}+1)">数值</div>-->
+                                <div class="col" th:id="video"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col" th:id="status"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col" th:id="train"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row progresses">
+                        <div class="col">
+                            <div class="progress">
+                                <div th:id="progress+(${i}+1)+(${j}+1)"
+                                     class="progress-bar progress-bar-striped progress-bar-animated"
+                                     role="progressbar"
+                                     style="width: 0;" aria-valuenow="0" aria-valuemin="0"
+                                     aria-valuemax="100">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer" style="bottom: 0;padding-top: 100px;">
+        Copyright© 2018 兰州宜元中林电子科技有限公司
+    </div>
+
+    <!-- 模态框 用户验证 -->
+    <div class="modal" id="confirmModal" tabindex="-1" role="dialog" style="padding-top: 200px;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">用户验证</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="confirmForm">
+                        <div class="form-group row has-success">
+                            <label for="yhdh" class="col-sm-3 col-form-label">用户名</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control form-control-success"
+                                       id="yhdh" name="yhdh"
+                                       placeholder="请输入用户名">
+                            </div>
+                        </div>
+                        <div class="form-group row has-warning">
+                            <label for="mm" class="col-sm-3 col-form-label">密码</label>
+                            <div class="col-sm-9">
+                                <input type="password" class="form-control form-control-warning"
+                                       id="mm" name="mm"
+                                       placeholder="请输入密码">
+                                <div class="feedback"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="submitBtn" onclick="confirmUser();">确认</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框 初始化 -->
+    <div class="modal" id="initModal" tabindex="-1" role="dialog" style="padding-top: 200px;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">初始化</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" style="width: 460px;height: 223px;margin-bottom: 0px;">
+                        <div style="margin-bottom: 15px;">
+                            <select name="input_province" id="input_province" class="form-control">
+                                <%--
+                                <option value="">--&nbsp;车&nbsp;&nbsp;队&nbsp;--</option>
+                                --%>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <select name="input_city" id="input_city" class="form-control">
+                                <%--
+                                <option value="">--&nbsp;车&nbsp;&nbsp;组&nbsp;--</option>
+                                --%>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <select name="input_area" id="input_area" class="form-control">
+                                <%--
+                                <option value="">--&nbsp;车&nbsp;&nbsp;次&nbsp;--</option>
+                                --%>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 26px;">
+                            <select name="input_iden" id="input_iden" class="form-control">
+                                <%--
+                                <option value="">--设备编号--</option>
+                                --%>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-top: 0px;height:40px;text-align: center;">
+                        <h6 style="text-align: center;"><span>**</span>车次信息<span>**</span></h6>
+                        <p id="ccxx"></p>
+                    </div>
+                    <p id="initModalText"></p>
+                </div>
+                <div class="modal-footer" id="initModal-footer">
+                    <div class="button-outter" style="text-align: center">
+                        <button type="button" class="btn btn-primary " onclick="initDevice()" style=""
+                                id="initbutton">初始化
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 模态框 用户验证 -->
+    <div class="modal" id="logoutModal" tabindex="-1" role="dialog" style="padding-top: 200px;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">退出验证</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    确认退出吗？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="window.close();">确认</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/bootstrap/js/bootstrap.js}"></script>
+<script type="text/javascript" th:src="@{/static/bootstrap/js/bootstrapValidator.js}"></script>
+<!-- layer -->
+<script type="text/javascript" th:src="@{/static/layer/layer.js}"></script>
+<!-- jquery-validator -->
+<script type="text/javascript" th:src="@{/static/jquery-validation/jquery.validate.min.js}"></script>
+<!--sock js-->
+<script type="text/javascript" th:src="@{/static/js/sockjs.min.js}"></script>
+
+<!--flipClock-->
+<script type="text/javascript" th:src="@{/static/flipclock/flipclock.js}"></script>
+
+<!--生成初始化下拉列表的-->
+<script type="text/javascript" th:src="@{/static/js/depTree.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/depSelect.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/tools.js}"></script>
+
+<script>
+    //页面刷新，存储的状态就没了，
+    //时间插件
+    function clock() {
+        $('.clock').FlipClock({
+            clockFace: 'TwentyFourHourClock'
+        });
+    }
+
+    var globalDisks = [];//存放位置和车次信息的键值对
+    $(function () {
+
+        //是否使用数据库
+        var useDb = $("#useDb").val();
+        if (useDb === "true") {
+            sessionExpired();
+        }
+        clock();
+        //1.设置存放旧盘的变量
+        sessionStorage.setItem("oldDisks", JSON.stringify([]));
+        //把20个表格的id放到全局数组
+        $(".innerBorder").each(function (index, node) {
+            globalDisks.push({"id": Number(node.id.slice(5, 7)), "info": null});
+        });
+        formvalidate();
+        // confirm();
+    });
+
+
+    var scanDiskSocket = new WebSocket('ws://' + window.location.host + '/initMessage');
+
+    //把数据库和用户验证放到最前面
+    function confirm() {
+        //先判断是否连接数据库
+        var useDb = $("#useDb").val();
+        if (useDb === "true") {
+            //判断是否有导出用户
+            var exportUser = JSON.parse(sessionStorage.getItem("exportUser"));
+            if (exportUser == null) {
+                $("#confirmModal").modal("show");
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    scanDiskSocket.onopen = function () {
+        //验证通过再发送消息
+        if (confirm()) {
+            scanDiskSocket.send('success');
+            scanDiskSocket.onmessage = function (e) {
+                //2.后台传过来的检测到的盘
+                var data = JSON.parse(e.data);
+                console.log("data", data);
+                var disks = data.disks;
+                var notInit = data.notInit;//没有初始化的盘
+
+                //后台只管往来传，前台判断盘符的变化 用sessionStorage
+                var reducedDisks = data['reduceList'];
+                var increasedDisks = data['increaseList'];
+
+                // 根据减少的盘，移除页面样式,减少的是哪个位置的
+                //要根据盘的value或去key
+                confirmNotInitDisk(notInit);
+                if (reducedDisks.length > 0) {
+                    $.each(reducedDisks, function (index, disk) {
+                        var object = getIdByName(globalDisks, disk.trainInfo, "info", "trainInfo");
+                        console.log(object);
+                        //移除样式
+                        wipeGrid(object.id);
+                        //修改全局变量
+                        updateValueById(globalDisks, object.id, "id", "info", null);
+                    });
+                }
+
+                if (increasedDisks.length > 0) {//length要大于0 不然没有盘也会验证
+                    beginExport(increasedDisks);
+                }
+            };
+        }
+
+    };
+
+    function confirmNotInitDisk(notInit) {
+        if (notInit.length > 1) {//多个未初始化，请拔除
+            layer.msg("多台设备未初始化，请拔出设备单个进行初始化");
+            return;
+        } else if (notInit.length === 1) {//只有一个未初始化，开始初始化
+            $("#initModal").modal("show");
+            $("#disknum").val(notInit[0].diskid);
+            return;
+        }
+    }
+
+    function beginExport(increasedDisks) {
+        $.each(increasedDisks, function (index, disk) {
+            var min = getMinId();
+            updateValueById(globalDisks, min, "id", "info", disk);
+            fillGrid(min, disk);
+            exportData(min, disk);
+        });
+    }
+
+    var exportProgressSocket = new WebSocket('ws://' + window.location.host + '/exportProgress');
+    exportProgressSocket.onopen = function () {
+        // console.log(globalDisks);
+
+    };
+    exportProgressSocket.onmessage = function (e) {
+        console.log("progressdata", e.data);
+        //根据id 给progress赋值
+        $.each(JSON.parse(e.data), function (index, value) {
+            console.log(index, value);
+            //拔出了盘，但是这又显示出来了  断点续传的拔了盘，还在传
+            $("#progress" + index).css({width: value}).text(value);
+            // //导完之后就不要让再导了
+            // if (value === "100.00%") {
+            //     updateValueById(globalDisks, index, "id", "info", null);
+            // }
+        });
+    };
+
+    function exportData(min, disk) {
+        // exportProgressSocket.send(JSON.stringify(globalDisks.filter(function (data) {
+        //     return data.info;
+        // })));
+        exportProgressSocket.send(JSON.stringify({"id": "" + min, "info": disk}));
+    }
+
+
+    //给grid赋值并添加样式
+    function fillGrid(min, disk) {
+        $("#grid_" + min + " #video").text(disk.freeSpace + "/" + disk.totalSpace);
+        $("#grid_" + min + " #status").text("导入中。。。。");
+        $("#grid_" + min + " #train").text(disk.trainInfo);
+        $("#grid_" + min).addClass('gridBack');
+        // $("#progress" + min).css({width: '60%'}).text('60%');
+    }
+
+    //去除grid样式
+    function wipeGrid(min) {
+        $("#grid_" + min + " #video").text('');
+        $("#grid_" + min + " #status").text('');
+        $("#grid_" + min + " #train").text('');
+        $("#grid_" + min).removeClass('gridBack');
+        $("#progress" + min).css({width: '0%'}).text('');
+    }
+
+
+    function logout() {
+        console.log("我要退出了！");
+        //判断是否使用数据库
+        var useDb = $("#useDb").val();
+        if (useDb === "true") {
+            $.ajax({
+                url: "/loginOut",
+                type: "POST",
+                data: {
+                    // yhdh: $("#name").val(),
+                    // mm: mm
+                },
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function (data) {
+                }
+            });
+        } else {//登录都没有，退出啥
+            /*console.log("false");
+            $("#logoutModal").modal('show');*/
+        }
+
+    }
+
+    function confirmUser() {
+        // Validate the form manually
+        $('#confirmForm').bootstrapValidator('validate');
+        if ($('#confirmForm').data('bootstrapValidator').isValid()) {
+            var mm = $("#mm").val();
+            $.ajax({
+                url: "/login",
+                type: "POST",
+                data: {
+                    yhdh: $("#yhdh").val(),
+                    mm: mm
+                },
+                success: function (data) {
+                    console.log(data);
+                    if (data.code === '0') {
+                        $(".feedback").text('');
+                        //隐藏且把输入框清空掉
+                        $("#confirmModal").modal("hide");
+                        $("#yhdh").val("");
+                        $("#mm").val("");
+
+                        //设置导出数据的标记
+                        sessionStorage.setItem("exportUser", JSON.stringify(data.data));
+                    } else {
+                        $(".feedback").text(data.msg);
+                    }
+                },
+                error: function (data) {
+                    console.log("err", data);
+                    $(".feedback").text(data);
+                }
+            });
+        }
+
+    }
+
+    function formvalidate() {
+
+        $('#confirmForm').bootstrapValidator({
+//        live: 'disabled',
+            message: 'This value is not valid',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                yhdh: {
+                    validators: {
+                        notEmpty: {
+                            message: '用户名不能为空'
+                        }
+                    }
+                },
+                mm: {
+                    validators: {
+                        notEmpty: {
+                            message: '密码不能为空'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    /*  以下为初始化部分 */
+
+    //初始化车次信息
+    function initDevice() {
+        var cd = $("#input_province").val();//车队
+        var cz = $("#input_city").val();//车组
+        var cc = $("#input_area").val();//车次
+        var bh = $("#input_iden").val();//编号
+        if (cd == null || cd == "") {
+            layer.msg("请选择车队");
+            return false;
+        } else if (cz == null || cz == "") {
+            layer.msg("请选择车组");
+            return false;
+        } else if (cc == null || cc == "") {
+            layer.msg("请选择车次");
+            return false;
+        } else if (bh == null || bh == "") {
+            layer.msg("请选择设备编号");
+            return false;
+        }
+        var trainInfo = cd + "-" + cz + "-" + cc + "-" + bh;
+        var disk = $("#disknum").val();
+        //console.log(disknum);
+        var exportUser = JSON.parse(sessionStorage.getItem("exportUser"));
+        console.log(exportUser);
+        $.ajax({
+            url: '/init/',
+            type: 'POST',
+            data: {disk: disk, trainInfo: trainInfo, exportUser: JSON.stringify(exportUser)},
+            success: function (data) {
+                console.log("initData", data);
+                if (data.code === "0") {
+                    layer.msg("初始化成功");
+                    $("#initModal").modal("hide");
+                    $("#input_province").val("");//车队
+                    $("#input_city").val("");//车组
+                    $("#input_area").val("");//车次
+                    $("#input_iden").val("");//编号
+                    $("#disknum").val("");
+                    $("#ccxx").text("");
+                } else {
+                    layer.msg("初始化失败");
+                }
+
+            }
+        })
+
+    }
+
+</script>
+</html>

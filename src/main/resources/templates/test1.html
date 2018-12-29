@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>数据导出页面</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+</head>
+<body>
+
+<input id="name" type="text">
+<button onclick="aa();">点我啊</button>
+</body>
+<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+<script language="jscript">
+    function aa() {
+        fullScreen();
+        var name = $("#name").val();
+        if (name == '111') {
+            doLogin();
+        }
+    }
+
+    function doLogin() {
+        $.ajax({
+            url: "/login",
+            type: "POST",
+            data: {
+                username: $("#name").val(),
+                password: '123'
+            },
+            success: function (data) {
+                console.log(data);
+                if (data.code == 0) {
+                    parent.document.getElementById("main_frame").style.display = "";
+                    parent.document.getElementById("frame").style.display = "none";
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function (data) {
+                console.log("err", data);
+                layer.closeAll();
+            }
+        });
+    }
+
+    function fullScreen() {
+        var el = document.documentElement;
+        var rfs = el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+        if (typeof rfs != "undefined" && rfs) {
+            rfs.call(el);
+        }
+    }
+</script>
+</html>

@@ -1,0 +1,188 @@
+/*循环的20个框*/
+body {
+    background-image: url("../image/bg_1.png");
+}
+
+.head {
+    width: 100%;
+    height: 50px;
+    /*margin-top: 20px;*/
+    font-size: 30px;
+    text-align: center;
+    line-height: 80px;
+    color: #6adfeb;
+}
+
+/*.time {*/
+/*font-size: 20px;*/
+/*!*text-align: right;*!*/
+/*margin-top: 20px;*/
+/*!*text-wrap: none;*!*/
+/*height: 45px;*/
+/*line-height: 45px;*/
+/*padding-left: 65px;*/
+/*background: url('../image/clock.png') no-repeat  ;*/
+/*}*/
+/*#headTime {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    text-align: right;
+}
+
+#headTime > img {
+    height: 40px;
+    border-radius: 15px;
+    width: 40px;
+}
+
+#headTime > .time {
+    display: inline-block;
+    padding-left: 10px;
+    font-size: 20px;
+}*/
+#headTime {
+    line-height: 50px;
+    /*width: 50px;*/
+    /*margin-left: 40px;*/
+}
+
+#headTime > img {
+    height: 40px;
+    border-radius: 20px;
+    width: 40px;
+    vertical-align: middle;
+}
+
+#headTime > .time {
+    font-size: 20px;
+}
+
+.container {
+    padding: 30px;
+    width: 90%;
+    /*margin-right: 50px;*/
+    /*margin-left: 50px;*/
+    /*background-image: url("../image/border_background.png");*/
+    /*background-image:url(../image/border_background.png);*/
+    /*background-repeat: no-repeat;*/
+    /*background-size: 100% 100%;*/
+    /*-moz-background-size: 100% 100%;*/
+}
+
+/*修改container的宽度*/
+@media (min-width: 1200px) {
+    .container {
+        max-width: 80%;
+    }
+}
+
+.container .justify-content-around {
+    /*padding: 0;*/
+    margin: 0;
+}
+
+.container .row .outBorder {
+    /*width: 288px;*/
+    /*height: 120px;*/
+    /*padding: 0 20px 0 20px;*/
+    /*float: left;*/
+    /*border-radius: 10px;*/
+    margin: 0 0 0 0;
+    padding-right: 10px; /*表格横向之间的间隙*/
+    padding-left: 10px; /*表格横向之间的间隙*/
+}
+
+.container .row .innerBorder {
+    color: #6adfeb;
+    height: 120px;
+    border: 2px dashed #6adfeb;
+    border-radius: 10px;
+
+}
+
+.innerBorder .data {
+    height: 85%;
+    /*padding: 0;*/
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.innerBorder .data .row {
+    height: 33%;
+    /*padding: 5px;*/
+}
+
+.innerBorder .progresses {
+    height: 10%;
+    /*padding: 0 5px 8px 5px;*/
+}
+
+.progress {
+    height: 10px;
+    background-color: #8D8D8D;
+    margin-right: 5px;
+}
+
+.footer {
+    width: 100%;
+    height: 30px;
+    font-size: 15px;
+    padding-bottom: 10px;
+    text-align: center;
+    line-height: 30px;
+    color: #6adfeb;
+}
+
+div .col {
+    /*padding: 0;*/
+}
+
+.row {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 5px;
+    margin-right: 0;
+}
+
+.col {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.col-3 {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.col-9 {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.col-md-3 {
+    padding: 0;
+}
+
+.gridBack {
+    background: url("../image/bt_up.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+.okButton{
+    float: left;
+    width:110px;
+    background-color: #509de1;
+    border-radius: 18px;
+    border: 0;
+}
+.cancelButton{
+    color:#000;
+    float: left;
+    margin-left: 18px;
+    width:110px;
+    background-color: #fff;
+    border-radius: 18px;
+    border:1px solid #2a2d2e;
+}

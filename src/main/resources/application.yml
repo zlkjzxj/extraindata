@@ -1,0 +1,4 @@
+#使用模式
+spring:
+  profiles:
+    active: dev
